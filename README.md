@@ -21,6 +21,7 @@ Console.WriteLine(requrl);
 requrl = htmlNode["inna"]["innad"].GetProperty("class");
 Console.WriteLine(requrl);
 return;
+
 >> **Output:** 
 >>>你正则表达式写的也太好了！！！
 >>>你正则表达式写的也太好了！！！
@@ -34,6 +35,7 @@ HTMLParser.HtmlNode htmlNode = new HTMLParser.HtmlNode(roothtml);
 var requrl = htmlNode["sb_form_q"].GetProperty("placeholder");
 Console.WriteLine(requrl);
 return;
+
 >>**Output:** 
 >>>有问题尽管问我...
 
@@ -41,5 +43,6 @@ return;
 >>>HTMLParser.HtmlNode htmlNode = new HTMLParser.HtmlNode("\r\n<a id=\"dd\" href=\"dssgg1111\" href=\"dgeargerghrahfd1111\" / >\r\n<!--\r\n    \"\"\r\n-->\r\n<div class=\"outc\" href=\"dsvfz\">\r\n    <a id=\"inna\" href=\"adfsgrg\">\r\n    <a class=\"sssss\" id=\"innad\" href=\"adfsgrg\">\r\n\r\n    </a>\r\n\r\n    </a>\r\n</div>\r\n<img name=\"img\" class=\"iimg\" src=\"你正则表达式写的也太好了！！！\" alt=\"agsc\"></img>");
 var requrl = htmlNode["outc", UniqueTags._class].ByTypes()["a"].GetProperty("id");
 Console.WriteLine(requrl);
+
 >>**Output:**
 >>>inna
