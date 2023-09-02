@@ -1,13 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Title>JNG HtmlParser</Title>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>htmlparser_light</PackageId>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<VersionPrefix>1.0.0.2</VersionPrefix>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\JType\JTypes.csproj" />
-  </ItemGroup>
+	<!--<ItemGroup>
+		<None Remove="LICENSE.txt" />
+	</ItemGroup>-->
+
+	<ItemGroup>
+		<ProjectReference Include="..\JType\JTypes.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="LICENSE.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="LICENSE.txt">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

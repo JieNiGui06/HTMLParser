@@ -190,7 +190,10 @@ namespace HTMLParser
     {
         public HtmlNode(string str) : base(str) { }
         public HtmlNode(string str, ReversibleDictionary<string, string> vs, List<string> annos) : base(str, vs, annos) { }
+        public HtmlNode(HtmlTypesNode htmlNode) : base(htmlNode.AllText, htmlNode.AllValueCollection, htmlNode.annotations)
+        {
 
+        }
         public HtmlNode this[object uns, UniqueTags ut = UniqueTags._id]
         {
             get
@@ -202,7 +205,7 @@ namespace HTMLParser
 
         public HtmlTypesNode ByTypes()
         {
-            return new HtmlTypesNode(AllText);
+            return new HtmlTypesNode(this);
         }
 
 
@@ -216,6 +219,7 @@ namespace HTMLParser
 
     public class HtmlTypesNode : HtmlNodeBase
     {
+
         public HtmlTypesNode(string str) : base(str)
         {
 
@@ -238,7 +242,7 @@ namespace HTMLParser
         }
         public HtmlNode ByTags()
         {
-            return new HtmlNode(AllText);
+            return new HtmlNode(this);
         }
         public static HtmlTypesNode Parse(string str)
         {
