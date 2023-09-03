@@ -4,9 +4,9 @@
 
 >**Explain:**
 >>**Install:** 
-dotnet add package htmlparser_light --version 1.0.0.2  
+dotnet add package htmlparser_light --version 1.0.0.3  
 Or search at vsNugetManage: htmlparser_light  
-Or goto the website: [NuGet Gallery | htmlparser_light 1.0.0.2](https://www.nuget.org/packages/htmlparser_light)  
+Or goto the website: [NuGet Gallery | htmlparser_light 1.0.0.3](https://www.nuget.org/packages/htmlparser_light/1.0.0.3)  
 
 
 ## Code Example (C#):
