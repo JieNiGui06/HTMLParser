@@ -28,7 +28,19 @@ namespace HTMLParser
         public List<string> annotations { get; protected set; } = new List<string>();
         public HtmlNode? InnerContent { get; set; }
         //const string pat = @"<(.+?)(\/(.?)>)";
-        public string? AllText { get; protected set; }
+        private string? _AllText;
+        public string? AllText
+        {
+            get => _AllText;
+            protected set
+            {
+                _AllText = value;
+                Regex r = new Regex(@"(?<=>)(.|\n)*(?=<)", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
+                Match match = r.Match(value);
+                if (match.Success)
+                    InnerContent = new HtmlNode(match.Value, AllValueCollection, annotations);
+            }
+        }
 
         protected HtmlNodeBase(string str, ReversibleDictionary<string, string> vs, List<string> annos)
         {
@@ -96,7 +108,7 @@ namespace HTMLParser
                     {
                         string key = t.Substring(1);
                         string value = AllValueCollection.Find2(unstr).Value.Item1;
-                        string pattern = $"<((?<opab>{string.Join('|', OpenableTags)})|(?<clab>\\w+))[^/<>]*(?(opab)|((?<hc>/)|[^/]))\\s*(?<={key}=\"{value}\"[^<]*)>(?(opab)|(?(hc)|(.|\n)*?</\\k<clab>\\s*>))";
+                        string pattern = $"<((?<opab>{string.Join('|', OpenableTags)})|(?<clab>\\w+))[^/<>]*(?(opab)|((?<hc>/)|[^/]))\\s*(?<={key}=\"{value}\"[^<]*)>(?(opab)|(?(hc)|((?<nclab><(?=\\k<clab>))|(?<-nclab><(?=/\\k<clab>))|(.|\n))*?</\\k<clab>\\s*>(?(nclab)(?!))))";
                         Match m = Regex.Match(AllText, pattern);
                         return new HtmlNode(m.Value, AllValueCollection, annotations);
                     }
@@ -120,7 +132,7 @@ namespace HTMLParser
                     }
                 }
                 //ucl = ucl.Substring(1);
-                string pattern = $"<(?<opab>({string.Join('|', OpenableTags)})|(?<clab>\\w+))([^<>/]*)(?(opab)|((?<hc>/)|[^/]))\\s*{ucl}>(?(opab)|(?(hc)|(.|\n)*?</\\k<clab>\\s*>))";
+                string pattern = $"<(?<opab>({string.Join('|', OpenableTags)})|(?<clab>\\w+))([^<>/]*)(?(opab)|((?<hc>/)|[^/]))\\s*{ucl}>(?(opab)|(?(hc)|((?<nclab><(?=\\k<clab>))|(?<-nclab><(?=/\\k<clab>))|(.|\n))*?</\\k<clab>\\s*>(?(nclab)(?!))))";
                 Match m = Regex.Match(AllText, pattern, RegexOptions.Multiline | RegexOptions.ExplicitCapture);
                 return new HtmlNode(m.Value, AllValueCollection, annotations);
             }
@@ -130,13 +142,14 @@ namespace HTMLParser
         public HtmlNode GetChildByType(string type, int f_l = 0)
         {
             Regex regex;
-            if (OpenableTags.Contains(type.Trim()))
+            if (OpenableTags.Contains(type))
             {
                 regex = new Regex(@"<" + type + @"(.|\n)*?>", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
             }
             else
             {
-                regex = new Regex(@"<" + type + @"((.*?)(/>)|(.|\n)*?(</" + type + @"(\s*?)>))", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
+                regex = new Regex(@"<" + type + @"(([^/>]*)(/\s*>)|((?<clab><(?=" + type + @"))|(?<-clab><(?=/" + type + @"\s*>))|(.|\n))*?(?(clab)(?!))(</" + type + @"(\s*?)>))", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
+                //regex = new Regex(@"<" + type + @"(([^/>]*)(/\s*>)|  ((?<clab><(?=a))|(?<-clab><(?=</a>))|([^<]|<(?!/?" + type + @")|))*? (?(clab)(?!))  (</" + type + @"(\s*?)>)   )", RegexOptions.Multiline | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace);
             }
 
             if (f_l == 0)
@@ -156,13 +169,13 @@ namespace HTMLParser
         public List<HtmlNode> GetChildrenByType(string type)
         {
             Regex regex;
-            if (OpenableTags.Contains(type.Trim()))
+            if (OpenableTags.Contains(type))
             {
                 regex = new Regex(@"<" + type + @"(.|\n)*?>", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
             }
             else
             {
-                regex = new Regex(@"<" + type + @"((.*?)(/>)|(.|\n)*?(</" + type + @"(\s*?)>))", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
+                regex = new Regex(@"<" + type + @"(([^/>]*)(/\s*>)|((?<clab><(?=" + type + @"))|(?<-clab><(?=/" + type + @"\s*>))|(.|\n))*?(?(clab)(?!))(</" + type + @"(\s*?)>))", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
             }
             MatchCollection collection = regex.Matches(AllText);
             List<HtmlNode> Children = new List<HtmlNode>();
@@ -176,7 +189,7 @@ namespace HTMLParser
 
         public string GetProperty(string p)
         {
-            Regex gvreg = new Regex(@"<\w+(.|\n)*" + p + @"=""(?<value>\d+)""(.|\n)*?>", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
+            Regex gvreg = new Regex(@"<\w+[^<>]*" + p + @"=""(?<value>\d+)""[^<>]*>", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
             string index = gvreg.Match(AllText).Groups["value"].Value;
             //string rr = Regex.Replace(r.Value, $"\\b{p}(.*?)=(.*?)\"(?=(.*?))\"", "");
             return AllValueCollection[index].Item2;
